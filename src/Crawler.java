@@ -43,7 +43,7 @@ public class Crawler {
 
 	private boolean isSocialMedia (String domain) {
 
-		String[] socialMedia = {"youtube.com","twitter.com","linkedin.com", "reddit.com","facebook.com",
+		String[] socialMedia = {"stumbleupon.com","youtube.com","twitter.com","linkedin.com", "reddit.com","facebook.com",
 				"pinterest.com","instagram.com","tumblr.com","flickr.com","snapchat.com","whatsapp.com"};
 
 		for(String s : socialMedia) 
