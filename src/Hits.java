@@ -11,6 +11,7 @@ public class Hits {
 	static FileReader fr;
 	static Map<Integer,Integer[]> graph;
 	static Map<String,Integer> conversionGraph;
+	static Map<String, Set<String>> allLinks;
 	static int[][] adjMtrx;
 	static int vertices;
 	static double[] hub;
@@ -22,14 +23,28 @@ public class Hits {
 	static int numOfPages = 5;
 	static ArrayList<Integer> topAuthIndex; 
 	static ArrayList<Integer> topHubIndex;
-	static int iterations = 1500;
+	static int iterations = 100;
 	static Crawler crwl;
 
 	public static void main(String[] args) throws Exception {
 
-		graph = new HashMap<Integer,Integer[]>();
+		if (args.length < 3) {
+			System.out.println("Please enter valid number of arguments!");
+			return;
+		}
 
-		fr = new FileReader("big_data_analytics_root_set");
+		iterations = Integer.parseInt(args[0]);
+		numOfPages = Integer.parseInt(args[1]);
+		String fileName = args[2];
+		graph = new HashMap<Integer,Integer[]>();
+		//fileName = "big_data_analytics_root_set";
+		
+		if(fileName.trim().length() == 0 || numOfPages<1) {
+			System.out.println("Please enter valid arguments!");
+			return;
+		}
+		
+		fr = new FileReader(fileName);
 
 		crwl = new Crawler();
 
@@ -64,25 +79,36 @@ public class Hits {
 		System.out.println("--------------------Authority--------------------");
 		System.out.println();
 		for(int l : topAuthIndex) {
-			
+			System.out.println("Authority : "+auth[l] +"     Hub : "+hub[l]);
 			String lnk = getLink(l);
 			System.out.println(lnk);
 			System.out.println(crwl.getDescription(lnk));
-			System.out.println("Authority : "+auth[l] +"     Hub : "+hub[l]);
 			System.out.println();
 
 		}
 		System.out.println("--------------------Hub--------------------");
 		System.out.println();
 		for(int l : topHubIndex) {
-			
+			System.out.println("Authority : "+auth[l] +"     Hub : "+hub[l]);
 			String lnk = getLink(l);
 			System.out.println(lnk);
 			System.out.println(crwl.getDescription(lnk));
-			System.out.println("Authority : "+auth[l] +"     Hub : "+hub[l]);
 			System.out.println();
 		}
 
+		System.out.println("Neighborhood Graph: ");
+		Iterator it = allLinks.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry)it.next();
+			System.out.print((String) pair.getKey() +" --> ");
+			Set<String> links = (Set<String>) pair.getValue();
+			for(String lnk: links) {
+				System.out.print(lnk+", ");
+			}
+			System.out.println();
+			System.out.println();
+
+		}
 	}
 
 	public static String getLink(int index) {
@@ -234,7 +260,7 @@ public class Hits {
 		try {
 
 			//Map<Integer,Integer[]> graph = new HashMap<Integer,Integer[]>();
-			Map<String, Set<String>> allLinks = new HashMap<String, Set<String>>();
+			allLinks = new HashMap<String, Set<String>>();
 			conversionGraph = new HashMap<String,Integer>();
 
 			int counter = 0;

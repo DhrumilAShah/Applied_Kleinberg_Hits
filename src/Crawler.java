@@ -13,15 +13,18 @@ public class Crawler {
 
 
 	public String getDescription(String link) {
+		String desc = "";
 		try {
 			Document doc = Jsoup.connect(link).get();
-			String keywords = doc.select("meta[name=keywords]").first().attr("content");
-			System.out.println(keywords);
-			return doc.select("meta[name=description]").get(0).attr("content");
+			desc += doc.title();
+			
+			//Get title from document object.
+			desc += "\n"+doc.select("meta[name=description]").get(0).attr("content");
+			return desc;
 		}catch(Exception e) {
 			//e.printStackTrace();
 			//System.err.println("Problem in getDescription: "+e.getMessage());
-			return "";
+			return desc;
 		}
 	}
 
@@ -35,8 +38,10 @@ public class Crawler {
 			for (Element link : rootLinks) {
 				String lnk =link.attr("abs:href");
 				String dom = getDomainName(lnk); 
-				if( dom != null && !isSocialMedia(dom) && !domain.contains(dom) && !dom.contains(domain))
-					allLinks.add(lnk);
+				if( dom != null && !isSocialMedia(dom) && !domain.contains(dom) && !dom.contains(domain)) {
+					if(!(dom.contains("wikipedia") && lnk.contains("wikipedia")))
+						allLinks.add(lnk);
+				}
 			}
 			return allLinks;
 		}catch(Exception e) {
@@ -53,7 +58,7 @@ public class Crawler {
 			return domain.startsWith("www.") ? domain.substring(4) : domain;
 		}catch(Exception e) {
 			//System.err.println("Problem in getDomainName: "+e.getMessage());
-			return null;
+			return url;
 		}
 		
 	}
